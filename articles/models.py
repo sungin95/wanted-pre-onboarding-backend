@@ -6,7 +6,6 @@ from django.db import transaction
 from rest_framework.exceptions import ParseError
 
 
-# 공용 질문
 class Articles(CommonModel):
     owner = models.ForeignKey(
         "accounts.User",

@@ -29,7 +29,6 @@ class TestCreateUser(APITestCase):
             },
         )
         data = response.json()
-        print(data)
         self.assertEqual(
             User.get_object(data["user"]["pk"]).email,
             "testuser@naver.com",
@@ -201,7 +200,7 @@ class TestCreateUserDuplication(APITestCase):
         user = User.create_test_list(1)[0]
         self.user = user
 
-    def test_create_user_1(self):
+    def test_create_user_duplication_1(self):
         response = self.client.post(
             self.URL,
             data={
@@ -215,7 +214,7 @@ class TestCreateUserDuplication(APITestCase):
             "status code isn't 400.",
         )
 
-    def test_create_user_2(self):
+    def test_create_user_duplication_2(self):
         response = self.client.post(
             self.URL,
             data={
@@ -228,4 +227,97 @@ class TestCreateUserDuplication(APITestCase):
             data["email"],
             ["user with this email address already exists."],
             "email 중복 생성되었습니다.",
+        )
+
+
+# 유저 중복 생성 테스트
+class TestLoginUser(APITestCase):
+    URL = "/api/v1/accounts/log-in"
+
+    def setUp(self):
+        user = User.create_test_list(1)[0]
+        self.user = user
+        self.user_pw = "12345678"
+
+    def test_user_login_1(self):
+        response = self.client.post(
+            self.URL,
+            data={
+                "email": self.user.email,
+                "password": self.user_pw,
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            200,
+            "status code isn't 200.",
+        )
+
+    def test_user_login_2(self):
+        response = self.client.post(
+            self.URL,
+            data={
+                "email": self.user.email,
+                "password": self.user_pw,
+            },
+        )
+        data = response.json()
+        self.assertEqual(
+            data["message"],
+            f"{self.user.username}님 환영합니다.",
+            "로그인 성공시 메시지가 잘못되었습니다.",
+        )
+
+    def test_user_login_3(self):
+        response = self.client.post(
+            self.URL,
+            data={
+                "email": self.user.email + "_bed",
+                "password": self.user_pw,
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            400,
+            "status code isn't 400.",
+        )
+
+    def test_user_login_4(self):
+        response = self.client.post(
+            self.URL,
+            data={
+                "email": self.user.email,
+                "password": self.user_pw + "123",
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            400,
+            "status code isn't 400.",
+        )
+
+    def test_user_login_5(self):
+        response = self.client.post(
+            self.URL,
+            data={
+                "password": self.user_pw,
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            400,
+            "status code isn't 400.",
+        )
+
+    def test_user_login_6(self):
+        response = self.client.post(
+            self.URL,
+            data={
+                "email": self.user.email,
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            400,
+            "status code isn't 400.",
         )

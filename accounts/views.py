@@ -15,9 +15,10 @@ from rest_framework.permissions import (
     BasePermission,
 )
 from config import settings
-from .serializers import UserCreateSerializer
+from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import authenticate, login, logout
 
 
 class UserCreate(APIView):
@@ -28,7 +29,7 @@ class UserCreate(APIView):
         password = request.data.get("password")
         if not email or not password or len(password) < 8:
             raise ParseError
-        serializer = UserCreateSerializer(
+        serializer = UserSerializer(
             data={
                 "email": email,
             },
@@ -60,4 +61,50 @@ class UserCreate(APIView):
         return Response(
             serializer.errors,
             status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class LogIn(APIView):
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+        if not email or not password:
+            raise ParseError
+        user = authenticate(
+            email=email,
+            password=password,
+        )
+        if user is not None:
+            serializer = UserSerializer(user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": f"{user.username}님 환영합니다.",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            return res
+
+        else:
+            return Response(
+                {"errors": "아이디 혹은 비밀번호가 잘못되었습니다."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class LogOut(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        logout(request)
+        return Response(
+            {"ok": "bye!"},
+            status=status.HTTP_200_OK,
         )

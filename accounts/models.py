@@ -44,7 +44,7 @@ class User(AbstractUser):
                 username=id_,
                 email=id_ + "@naver.com",
             )
-            user.set_password("123")
+            user.set_password("12345678")
             user.save()
             user_list.append(user)
         return user_list

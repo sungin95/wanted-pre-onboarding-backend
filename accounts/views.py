@@ -99,12 +99,13 @@ class LogIn(APIView):
             )
 
 
-class LogOut(APIView):
-    permission_classes = [IsAuthenticated]
+# class LogOut(APIView):
+#     # permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        logout(request)
-        return Response(
-            {"ok": "bye!"},
-            status=status.HTTP_200_OK,
-        )
+#     def post(self, request):
+#         print(request)
+#         # logout(request)
+#         return Response(
+#             {"ok": "bye!"},
+#             status=status.HTTP_200_OK,
+#         )

@@ -6,9 +6,10 @@ from django.contrib.auth.hashers import make_password
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username, password=None):
-        if not username:
-            raise ValueError("Users must have an username")
+    def create_user(self, email, username=None, password=None):
+        username = email.split("@")[0]
+        if not email:
+            raise ValueError("이메일 주소는 필수입니다.")
         user = self.model(
             email=email,
             username=username,
@@ -18,7 +19,7 @@ class UserManager(BaseUserManager):
         return user
 
     # python manage.py createsuperuser 사용 시 해당 함수가 사용됨
-    def create_superuser(self, email, username, password=None):
+    def create_superuser(self, email, username=None, password=None):
         user = self.create_user(
             email=email,
             username=username,
@@ -31,7 +32,11 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, CommonModel):
     # DB에 저장할 데이터를 선언
-    username = models.CharField("사용자 계정", max_length=20, unique=True)
+    username = models.CharField(
+        "사용자 계정",
+        max_length=20,
+        unique=True,
+    )
     password = models.CharField("비밀번호", max_length=128)
     email = models.EmailField(
         "이메일 주소",
@@ -61,7 +66,7 @@ class User(AbstractBaseUser, CommonModel):
 
     # 어드민 페이지에서 데이터를 제목을 어떻게 붙여줄 것인지 지정
     def __Str__(self):
-        return f"{self.username} / {self.email} 님의 계정입니다"
+        return f"{self.email} 님의 계정입니다"
 
     # 로그인 사용자의 특정 테이블의 crud 권한을 설정, perm table의 crud 권한이 들어간다.
     # admin일 경우 항상 True, 비활성 사용자(is_active=False)의 경우 항상 False

@@ -4,12 +4,22 @@ from .models import User
 
 
 class UserAdmin(BaseUserAdmin):
-    list_display = ("id", "username", "email")
-    list_display_links = ("username",)
-    list_filter = ("username",)
-    search_fields = (
+    list_display = (
+        "id",
         "username",
         "email",
+    )
+    list_display_links = (
+        "email",
+        "username",
+    )
+    list_filter = (
+        "email",
+        "username",
+    )
+    search_fields = (
+        "email",
+        "username",
     )
 
     fieldsets = (
@@ -43,6 +53,7 @@ class UserAdmin(BaseUserAdmin):
         if obj:
             return (
                 "username",
+                "email",
                 "created_at",
                 "updated_at",
             )

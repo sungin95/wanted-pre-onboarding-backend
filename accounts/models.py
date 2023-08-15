@@ -2,6 +2,7 @@ from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 from common.models import CommonModel
+from django.contrib.auth.hashers import make_password
 
 
 class UserManager(BaseUserManager):
@@ -78,3 +79,9 @@ class User(AbstractBaseUser, CommonModel):
     @property
     def is_staff(self):
         return self.is_admin
+
+
+# def create(self, validation_data):
+#         password = validation_data.pop('password')
+#         password = make_password(password)  # make_password(해시하고자 하는 변수)로 단 한줄로 끝!
+#         validation_data['password'] = password

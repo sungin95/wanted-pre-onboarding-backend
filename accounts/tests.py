@@ -201,7 +201,7 @@ class TestCreateUserDuplication(APITestCase):
         user = User.create_test_list(1)[0]
         self.user = user
 
-    def test_create_user_22(self):
+    def test_create_user_1(self):
         response = self.client.post(
             self.URL,
             data={
@@ -215,7 +215,7 @@ class TestCreateUserDuplication(APITestCase):
             "status code isn't 400.",
         )
 
-    def test_create_user_3(self):
+    def test_create_user_2(self):
         response = self.client.post(
             self.URL,
             data={

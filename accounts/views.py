@@ -1,31 +1,47 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import (
-    PermissionDenied,
     ParseError,
+    PermissionDenied,
     NotFound,
     NotAuthenticated,
-    ParseError,
 )
 from rest_framework import status
 from .models import User
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
     IsAuthenticated,
+    AllowAny,
+    BasePermission,
 )
 from config import settings
+from .serializers import UserCreateSerializer
+from rest_framework import status
 
 
 class UserCreate(APIView):
-    def get(self, request):
-        return Response(
-            {"ok": "ok"},
-            status.HTTP_201_CREATED,
-        )
+    permission_classes = [BasePermission]
 
     def post(self, request):
-        print(123)
+        email = request.data.get("email")
+        password = request.data.get("password")
+        if not email or not password or len(password) < 8:
+            raise ParseError
+        serializer = UserCreateSerializer(
+            data={
+                "email": email,
+                "username": User.email_to_username(email),
+            },
+        )
+        if serializer.is_valid():
+            user = serializer.save()
+            user.set_password(password)
+            user.save()
+            return Response(
+                serializer.data,
+                status.HTTP_201_CREATED,
+            )
         return Response(
-            {"ok": "ok"},
-            status.HTTP_201_CREATED,
+            serializer.errors,
+            status.HTTP_400_BAD_REQUEST,
         )

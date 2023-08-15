@@ -30,11 +30,12 @@ class UserCreate(APIView):
         serializer = UserCreateSerializer(
             data={
                 "email": email,
-                "username": User.email_to_username(email),
             },
         )
         if serializer.is_valid():
-            user = serializer.save()
+            user = serializer.save(
+                username=User.email_to_username(email),
+            )
             user.set_password(password)
             user.save()
             return Response(

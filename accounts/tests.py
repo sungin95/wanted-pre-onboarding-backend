@@ -152,6 +152,21 @@ class TestCreateUser(APITestCase):
         response = self.client.post(
             self.URL,
             data={
+                "email": "@@@asd",
+                "password": "abcdefgh",
+            },
+        )
+
+        self.assertEqual(
+            response.status_code,
+            400,
+            "@로 시작하였습니다.",
+        )
+
+    def test_create_user_11(self):
+        response = self.client.post(
+            self.URL,
+            data={
                 "email": "t@@@asd",
                 "password": "abcdefgh",
             },
@@ -162,19 +177,18 @@ class TestCreateUser(APITestCase):
             "추가적인 유효성 검사 조건이 있습니다. ",
         )
 
-    def test_create_user_11(self):
+    def test_create_user_12(self):
         response = self.client.post(
             self.URL,
             data={
-                "email": "@@@asd",
+                "email": "t123&*!@@@asd",
                 "password": "abcdefgh",
             },
         )
-
         self.assertEqual(
             response.status_code,
-            400,
-            "@로 시작하였습니다.",
+            201,
+            "추가적인 유효성 검사 조건이 있습니다. ",
         )
 
 

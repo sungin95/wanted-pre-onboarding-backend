@@ -8,5 +8,4 @@ class UserCreateSerializer(ModelSerializer):
         fields = (
             "pk",
             "email",
-            "username",
         )

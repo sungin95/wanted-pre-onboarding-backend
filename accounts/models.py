@@ -48,4 +48,9 @@ class User(AbstractUser):
         return user_list
 
     def email_to_username(email: str):
-        return email.split("@")[0]
+        username = email.split("@")[0]
+        if username:
+            return username
+        # 아무것도 없으면 오류
+        else:
+            raise ParseError

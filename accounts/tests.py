@@ -29,15 +29,16 @@ class TestCreateUser(APITestCase):
             },
         )
         data = response.json()
+        print(data)
         self.assertEqual(
-            User.get_object(data["pk"]).email,
+            User.get_object(data["user"]["pk"]).email,
             "testuser@naver.com",
             "status code isn't 201.",
         )
 
     def test_create_user_3(self):
         try:
-            response = self.client.post(
+            self.client.post(
                 self.URL,
                 data={
                     "email": "testuser@naver.com",

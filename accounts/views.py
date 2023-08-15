@@ -17,6 +17,7 @@ from rest_framework.permissions import (
 from config import settings
 from .serializers import UserCreateSerializer
 from rest_framework import status
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserCreate(APIView):
@@ -38,10 +39,24 @@ class UserCreate(APIView):
             )
             user.set_password(password)
             user.save()
-            return Response(
-                serializer.data,
+            # 토큰
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": "회원가입 완료",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
                 status.HTTP_201_CREATED,
             )
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
         return Response(
             serializer.errors,
             status.HTTP_400_BAD_REQUEST,

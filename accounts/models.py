@@ -13,6 +13,8 @@ class User(AbstractUser):
         max_length=50,
         unique=True,
     )
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         email = kwargs.get("email")

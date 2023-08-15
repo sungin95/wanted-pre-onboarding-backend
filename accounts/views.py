@@ -11,19 +11,15 @@ from .models import User
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
     IsAuthenticated,
-    AllowAny,
-    BasePermission,
 )
-from config import settings
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserCreate(APIView):
-    permission_classes = [BasePermission]
-
     def post(self, request):
         email = request.data.get("email")
         password = request.data.get("password")
@@ -99,13 +95,15 @@ class LogIn(APIView):
             )
 
 
+# # 테스트 용도로 사용중
 # class LogOut(APIView):
-#     # permission_classes = [IsAuthenticated]
+#     permission_classes = [IsAuthenticated]
 
 #     def post(self, request):
-#         print(request)
-#         # logout(request)
+#         print(request.headers)
+#         refresh_token = request.headers["refresh"]
+#         token = RefreshToken(refresh_token)
+#         token.blacklist()
 #         return Response(
-#             {"ok": "bye!"},
 #             status=status.HTTP_200_OK,
 #         )

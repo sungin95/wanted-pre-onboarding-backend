@@ -16,9 +16,16 @@ from rest_framework.permissions import (
 from config import settings
 
 
-class UserGetCreate(APIView):
+class UserCreate(APIView):
     def get(self, request):
-        return Response(status.HTTP_200_OK)
+        return Response(
+            {"ok": "ok"},
+            status.HTTP_201_CREATED,
+        )
 
     def post(self, request):
-        return Response(status.HTTP_201_CREATED)
+        print(123)
+        return Response(
+            {"ok": "ok"},
+            status.HTTP_201_CREATED,
+        )

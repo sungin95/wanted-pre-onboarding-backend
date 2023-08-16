@@ -69,7 +69,7 @@ class LogIn(APIView):
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
-            return Response(
+            res = Response(
                 {
                     "user": serializer.data,
                     "message": f"{user.username}님 환영합니다.",
@@ -80,6 +80,9 @@ class LogIn(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
 
         else:
             return Response(

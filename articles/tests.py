@@ -20,6 +20,7 @@ class TestArticlesGet(APITestCase):
 
     def test_Articles_GET_1(self):
         response = self.client.get(self.URL)
+        print(response.json())
         self.assertEqual(
             response.status_code,
             200,

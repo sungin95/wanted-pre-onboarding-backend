@@ -73,5 +73,77 @@ accounts<유저>
 구현한 API의 동작을 촬영한 데모 영상 링크
 
 구현 방법 및 이유에 대한 간략한 설명
+이메일과 비밀번호로 회원가입할 수 있는 엔드포인트를 구현해 주세요.
+
+```
+USERNAME_FIELD = "email"
+REQUIRED_FIELDS = ["username"]
+```
+
+이메일로 로그인 할 수 있게 설정 변경
+
+이메일과 비밀번호에 대한 유효성 검사를 구현해 주세요.
+이메일 조건: @ 포함
+=> AbstractUser을 그대로 사용하면 email필드가 다른 규칙이 섞여 있어서 재정의 후
+
+```python
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        email = kwargs.get("email")
+        if email and email.find("@") == -1:
+            raise ParseError
+
+        super().__init__(*args, **kwargs)
+```
+
+유저 생성시 @만 포함 되면 통과되도록 만들었습니다.
+비밀번호 조건: 8자 이상 and 비밀번호는 반드시 암호화하여 저장해 주세요.
+
+```python
+if len(password) < 8:
+    raise ParseError
+```
+
+이 부분도 다른 조건은 붙지 않도록 8자 이상이 되어야만 통과가 되도록 만들었습니다.
+그후
+
+```python
+user.set_password(password)
+```
+
+set_password메서드를 통해 해쉬 및 비밀번호를 지정해 주었습니다.
+
+JWT를 이용하기 위해 simplejwt 라이브러리를 사용했습니다.
+회원가입시 로그인시 자동 토큰 발행되도록 만들었습니다.
+
+페이지네이션 사용 게시글 조회
+퀴리매개변수(?page=2)로 page정보를 받도록 만들었습니다.
+없으면 자동으로 1로 설정이 됩니다.
+
+특정 게시글 수정, 삭제
+수정, 삭제는 작성자 조회를 위해 반드시 로그인을 해야 들어갈 수 있도록 설계
+로그인 유저 != 작성자 이면 오류 발생
+
+그리고 관리를 더 편하게 하기 위해
+functions폴더를 만들어 모델 기준으로 기능을 묶어서 관리하고 있습니다.
+[functions폴더](https://github.com/sungin95/wanted-pre-onboarding-backend/tree/main/functions)
+
+```python
+raise PermissionDenied
+```
 
 API 명세(request/response 포함)
+
+7
+
+| URL       | URI                  | METHOD | 설명                             | request.body                       | response.body                                                | 완료 |
+| --------- | -------------------- | ------ | -------------------------------- | ---------------------------------- | ------------------------------------------------------------ | ---- |
+| /articles | /?page=2             | GET    | 페이지 네이션을 이용 게시판 조회 |                                    | [{'pk': 1, 'title': 'test title', 'context': 'test context'}, {'pk': 2, 'title': 'test title', 'context': 'test context'}, {'pk': 3, 'title': 'test title', 'context': 'test context'}, {'pk': 4, 'title': 'test title', 'context': 'test context'}, {'pk': 5, 'title': 'test title', 'context': 'test context'}] |      |
+|           | /                    | POST   | 게시판 생성                      | {"title":xxx,"context":xxx}        | {"pk": 1, title":xxx,"context":xxx}                          |      |
+|           | /detail/<article_pk> | GET    | 조회한 게시판 정보 조회          |                                    | {'pk': 1, 'title': 'test title', 'context': 'test context'}  |      |
+|           | /detail/<article_pk> | PUT    | 조회한 게시판 정보 수정          | {"title":xxx,"context":xxx}        | {'pk': 1, "title":xxx, 'context': xxx}                       |      |
+|           | /detail/<article_pk> | DELETE | 조회한 게시판 정보 삭제          |                                    |                                                              |      |
+| /accounts | /create              | POST   | 유저 생성                        | {"email": xxx@nab,"password": xxx} | {"pk":1, "email": xxx@nab,"password": xxx}                   |      |
+|           | /log-in              | POST   | 유저 로그인                      | {"email": xxx@nab,"password": xxx} | {"pk":1, "email": xxx@nab,"password": xxx}                   |      |
+
+
+

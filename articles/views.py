@@ -78,7 +78,7 @@ def user_not_equal(request_user: User, user: User) -> bool:
 
 
 class ArticleDetail(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, article_pk):
         article = Articles.get_object(article_pk)

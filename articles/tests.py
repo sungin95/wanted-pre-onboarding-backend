@@ -117,3 +117,168 @@ class TestArticlesCreateLogin(APITestCase):
             "test context",
             "본문이 잘못 저장되었습니다.",
         )
+
+
+class TestArticlesDetailLogout(APITestCase):
+    URL = "/api/v1/articles/detail/"
+
+    def setUp(self):
+        user_list = User.create_test_list(1)
+        self.user = user_list[0]
+        self.article = Articles.create_test_list(1, self.user)[0]
+        self.TITLE = "test title"
+        self.CONTENT = "test context"
+
+    def test_Articles_Detail_GET_1(self):
+        response = self.client.get(
+            self.URL + str(self.article.pk),
+        )
+        self.assertEqual(
+            response.status_code,
+            200,
+            "status code isn't 200.",
+        )
+
+    def test_Articles_Detail_GET_2(self):
+        response = self.client.get(
+            self.URL + str(self.article.pk),
+        )
+        data = response.json()
+        self.assertEqual(
+            data["context"],
+            self.CONTENT,
+            "context가 잘못 출력 되었습니다.",
+        )
+
+    def test_Articles_Detail_PUT_1(self):
+        response = self.client.put(
+            self.URL + str(self.article.pk),
+            data={
+                "title": "test title 수정",
+                "context": "test context 수정",
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            401,
+            "status code isn't 401.",
+        )
+
+    def test_Articles_Detail_DELETE_1(self):
+        response = self.client.delete(
+            self.URL + str(self.article.pk),
+        )
+        self.assertEqual(
+            response.status_code,
+            401,
+            "status code isn't 401.",
+        )
+
+
+class TestArticlesDetailLogin(APITestCase):
+    URL = "/api/v1/articles/detail/"
+
+    def setUp(self):
+        user_list = User.create_test_list(1)
+        self.user = user_list[0]
+        self.article = Articles.create_test_list(1, self.user)[0]
+        self.TITLE = "test title"
+        self.CONTENT = "test context"
+        token = TokenObtainPairSerializer.get_token(self.user)
+        access_token = str(token.access_token)
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+
+    def test_Articles_Detail_PUT_1(self):
+        response = self.client.put(
+            self.URL + str(self.article.pk),
+            data={
+                "title": "test title 수정",
+                "context": "test context 수정",
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            201,
+            "status code isn't 201.",
+        )
+
+    def test_Articles_Detail_PUT_2(self):
+        response = self.client.put(
+            self.URL + str(self.article.pk),
+            data={
+                "title": "test title 수정",
+            },
+        )
+        data = response.json()
+        self.assertEqual(
+            data["title"],
+            "test title 수정",
+            "제목이 수정이 안되었습니다.",
+        )
+
+    def test_Articles_Detail_PUT_3(self):
+        response = self.client.put(
+            self.URL + str(self.article.pk),
+            data={
+                "context": "test context 수정",
+            },
+        )
+        data = response.json()
+        self.assertEqual(
+            data["context"],
+            "test context 수정",
+            "본문이 수정이 안되었습니다.",
+        )
+
+    def test_Articles_Detail_DELETE_1(self):
+        response = self.client.delete(
+            self.URL + str(self.article.pk),
+        )
+        self.assertEqual(
+            response.status_code,
+            204,
+            "status code isn't 204.",
+        )
+
+
+class TestArticlesDetailLoginOtherUser(APITestCase):
+    URL = "/api/v1/articles/detail/"
+
+    def setUp(self):
+        user_list = User.create_test_list(2)
+        self.user_owner = user_list[0]
+        self.user_other = user_list[1]
+        self.article = Articles.create_test_list(1, self.user_owner)[0]
+        self.TITLE = "test title"
+        self.CONTENT = "test context"
+        token = TokenObtainPairSerializer.get_token(self.user_other)
+        access_token = str(token.access_token)
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+
+    def test_Articles_Detail_PUT_1(self):
+        response = self.client.put(
+            self.URL + str(self.article.pk),
+            data={
+                "title": "test title 수정",
+                "context": "test context 수정",
+            },
+        )
+        self.assertEqual(
+            response.status_code,
+            403,
+            "status code isn't 403.",
+        )
+
+    def test_Articles_Detail_DELETE_1(self):
+        response = self.client.delete(
+            self.URL + str(self.article.pk),
+        )
+        self.assertEqual(
+            response.status_code,
+            403,
+            "status code isn't 403.",
+        )

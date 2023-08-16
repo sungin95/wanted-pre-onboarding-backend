@@ -2,7 +2,6 @@ from django.db import models
 from common.models import CommonModel
 from accounts.models import User
 from rest_framework.exceptions import NotFound
-from django.db import transaction
 from rest_framework.exceptions import ParseError
 
 

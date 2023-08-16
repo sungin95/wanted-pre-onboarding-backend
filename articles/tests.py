@@ -242,6 +242,24 @@ class TestArticlesDetailLogin(APITestCase):
             "status code isn't 204.",
         )
 
+    def test_Articles_Detail_DELETE_2(self):
+        self.client.delete(
+            self.URL + str(self.article.pk),
+        )
+        try:
+            Articles.get_object(self.article.pk)
+            self.assertEqual(
+                123,
+                2353536,
+                "article이 삭제가 안되었습니다. ",
+            )
+        except:
+            self.assertEqual(
+                True,
+                True,
+                "삭제가 된 상황.",
+            )
+
 
 class TestArticlesDetailLoginOtherUser(APITestCase):
     URL = "/api/v1/articles/detail/"

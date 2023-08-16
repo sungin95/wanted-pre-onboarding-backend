@@ -123,27 +123,35 @@ JWT를 이용하기 위해 simplejwt 라이브러리를 사용했습니다.
 수정, 삭제는 작성자 조회를 위해 반드시 로그인을 해야 들어갈 수 있도록 설계
 로그인 유저 != 작성자 이면 오류 발생
 
+```python
+raise PermissionDenied
+```
+
 그리고 관리를 더 편하게 하기 위해
 functions폴더를 만들어 모델 기준으로 기능을 묶어서 관리하고 있습니다.
 [functions폴더](https://github.com/sungin95/wanted-pre-onboarding-backend/tree/main/functions)
 
-```python
-raise PermissionDenied
+MySQL 연결
+
+```
+# .env 파일을 만들어서 내용을 연결하시면 됩니다.
+DB_NAME=""
+DB_USER=""
+DB_PASSWORD=""
+DB_HOST="127.0.0.1"
+DB_PORT=3306
 ```
 
 API 명세(request/response 포함)
 
 7
 
-| URL       | URI                  | METHOD | 설명                             | request.body                       | response.body                                                | 완료 |
-| --------- | -------------------- | ------ | -------------------------------- | ---------------------------------- | ------------------------------------------------------------ | ---- |
+| URL       | URI                  | METHOD | 설명                             | request.body                       | response.body                                                                                                                                                                                                                                                                                                     | 완료 |
+| --------- | -------------------- | ------ | -------------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
 | /articles | /?page=2             | GET    | 페이지 네이션을 이용 게시판 조회 |                                    | [{'pk': 1, 'title': 'test title', 'context': 'test context'}, {'pk': 2, 'title': 'test title', 'context': 'test context'}, {'pk': 3, 'title': 'test title', 'context': 'test context'}, {'pk': 4, 'title': 'test title', 'context': 'test context'}, {'pk': 5, 'title': 'test title', 'context': 'test context'}] |      |
-|           | /                    | POST   | 게시판 생성                      | {"title":xxx,"context":xxx}        | {"pk": 1, title":xxx,"context":xxx}                          |      |
-|           | /detail/<article_pk> | GET    | 조회한 게시판 정보 조회          |                                    | {'pk': 1, 'title': 'test title', 'context': 'test context'}  |      |
-|           | /detail/<article_pk> | PUT    | 조회한 게시판 정보 수정          | {"title":xxx,"context":xxx}        | {'pk': 1, "title":xxx, 'context': xxx}                       |      |
-|           | /detail/<article_pk> | DELETE | 조회한 게시판 정보 삭제          |                                    |                                                              |      |
-| /accounts | /create              | POST   | 유저 생성                        | {"email": xxx@nab,"password": xxx} | {"pk":1, "email": xxx@nab,"password": xxx}                   |      |
-|           | /log-in              | POST   | 유저 로그인                      | {"email": xxx@nab,"password": xxx} | {"pk":1, "email": xxx@nab,"password": xxx}                   |      |
-
-
-
+|           | /                    | POST   | 게시판 생성                      | {"title":xxx,"context":xxx}        | {"pk": 1, title":xxx,"context":xxx}                                                                                                                                                                                                                                                                               |      |
+|           | /detail/<article_pk> | GET    | 조회한 게시판 정보 조회          |                                    | {'pk': 1, 'title': 'test title', 'context': 'test context'}                                                                                                                                                                                                                                                       |      |
+|           | /detail/<article_pk> | PUT    | 조회한 게시판 정보 수정          | {"title":xxx,"context":xxx}        | {'pk': 1, "title":xxx, 'context': xxx}                                                                                                                                                                                                                                                                            |      |
+|           | /detail/<article_pk> | DELETE | 조회한 게시판 정보 삭제          |                                    |                                                                                                                                                                                                                                                                                                                   |      |
+| /accounts | /create              | POST   | 유저 생성                        | {"email": xxx@nab,"password": xxx} | {"pk":1, "email": xxx@nab,"password": xxx}                                                                                                                                                                                                                                                                        |      |
+|           | /log-in              | POST   | 유저 로그인                      | {"email": xxx@nab,"password": xxx} | {"pk":1, "email": xxx@nab,"password": xxx}                                                                                                                                                                                                                                                                        |      |

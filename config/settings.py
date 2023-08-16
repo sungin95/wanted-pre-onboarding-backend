@@ -156,5 +156,6 @@ SIMPLE_JWT = {
 }
 AUTH_USER_MODEL = "accounts.User"
 
-
 PAGE_SIZE = 5
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")

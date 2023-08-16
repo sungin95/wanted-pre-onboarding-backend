@@ -3,6 +3,8 @@ from accounts.models import User
 from .models import Articles
 from config import settings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from functions.accounts import user_create_test_list
+from functions.articles import article_create_test_list
 
 
 class TestArticlesGet(APITestCase):
@@ -10,9 +12,9 @@ class TestArticlesGet(APITestCase):
 
     def setUp(self):
         self.articles_len = 12
-        user_list = User.create_test_list(1)
+        user_list = user_create_test_list(1)
         self.user = user_list[0]
-        Articles.create_test_list(self.articles_len, self.user)
+        article_create_test_list(self.articles_len, self.user)
         self.TITLE = "test title"
         self.CONTENT = "test context"
 
@@ -44,7 +46,7 @@ class TestArticlesCreateLogout(APITestCase):
     URL = "/api/v1/articles/"
 
     def setUp(self):
-        user_list = User.create_test_list(1)
+        user_list = user_create_test_list(1)
         self.user = user_list[0]
 
     def test_Articles_Create_1(self):
@@ -66,7 +68,7 @@ class TestArticlesCreateLogin(APITestCase):
     URL = "/api/v1/articles/"
 
     def setUp(self):
-        user_list = User.create_test_list(1)
+        user_list = user_create_test_list(1)
         self.user = user_list[0]
         token = TokenObtainPairSerializer.get_token(self.user)
         access_token = str(token.access_token)
@@ -123,9 +125,9 @@ class TestArticlesDetailLogout(APITestCase):
     URL = "/api/v1/articles/detail/"
 
     def setUp(self):
-        user_list = User.create_test_list(1)
+        user_list = user_create_test_list(1)
         self.user = user_list[0]
-        self.article = Articles.create_test_list(1, self.user)[0]
+        self.article = article_create_test_list(1, self.user)[0]
         self.TITLE = "test title"
         self.CONTENT = "test context"
 
@@ -179,9 +181,9 @@ class TestArticlesDetailLogin(APITestCase):
     URL = "/api/v1/articles/detail/"
 
     def setUp(self):
-        user_list = User.create_test_list(1)
+        user_list = user_create_test_list(1)
         self.user = user_list[0]
-        self.article = Articles.create_test_list(1, self.user)[0]
+        self.article = article_create_test_list(1, self.user)[0]
         self.TITLE = "test title"
         self.CONTENT = "test context"
         token = TokenObtainPairSerializer.get_token(self.user)
@@ -265,10 +267,10 @@ class TestArticlesDetailLoginOtherUser(APITestCase):
     URL = "/api/v1/articles/detail/"
 
     def setUp(self):
-        user_list = User.create_test_list(2)
+        user_list = user_create_test_list(2)
         self.user_owner = user_list[0]
         self.user_other = user_list[1]
-        self.article = Articles.create_test_list(1, self.user_owner)[0]
+        self.article = article_create_test_list(1, self.user_owner)[0]
         self.TITLE = "test title"
         self.CONTENT = "test context"
         token = TokenObtainPairSerializer.get_token(self.user_other)

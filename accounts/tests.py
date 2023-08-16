@@ -1,5 +1,7 @@
 from rest_framework.test import APITestCase
 from accounts.models import User
+from functions.accounts import user_create_test_list, user_get_object
+from functions.articles import article_create_test_list, article_get_object
 
 
 # 아이디 생성 테스트
@@ -30,7 +32,7 @@ class TestCreateUser(APITestCase):
         )
         data = response.json()
         self.assertEqual(
-            User.get_object(data["user"]["pk"]).email,
+            user_get_object(data["user"]["pk"]).email,
             "testuser@naver.com",
             "status code isn't 201.",
         )
@@ -58,7 +60,7 @@ class TestCreateUser(APITestCase):
 
     def test_create_user_4(self):
         try:
-            response = self.client.post(
+            self.client.post(
                 self.URL,
                 data={
                     "email": "testuser@naver.com",
@@ -197,7 +199,7 @@ class TestCreateUserDuplication(APITestCase):
     URL = "/api/v1/accounts/create"
 
     def setUp(self):
-        user = User.create_test_list(1)[0]
+        user = user_create_test_list(1)[0]
         self.user = user
 
     def test_create_user_duplication_1(self):
@@ -235,7 +237,7 @@ class TestLoginUser(APITestCase):
     URL = "/api/v1/accounts/log-in"
 
     def setUp(self):
-        user = User.create_test_list(1)[0]
+        user = user_create_test_list(1)[0]
         self.user = user
         self.user_pw = "12345678"
 

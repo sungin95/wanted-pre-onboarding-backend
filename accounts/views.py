@@ -2,21 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import (
     ParseError,
-    PermissionDenied,
-    NotFound,
-    NotAuthenticated,
 )
 from rest_framework import status
-from .models import User
-from rest_framework.permissions import (
-    IsAuthenticatedOrReadOnly,
-    IsAuthenticated,
-)
 from .serializers import UserSerializer
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
+from functions.accounts import email_to_username
 
 
 class UserCreate(APIView):
@@ -32,7 +24,7 @@ class UserCreate(APIView):
         )
         if serializer.is_valid():
             user = serializer.save(
-                username=User.email_to_username(email),
+                username=email_to_username(email),
             )
             user.set_password(password)
             user.save()
@@ -66,16 +58,18 @@ class LogIn(APIView):
         password = request.data.get("password")
         if not email or not password:
             raise ParseError
+
         user = authenticate(
             email=email,
             password=password,
         )
+
         if user is not None:
             serializer = UserSerializer(user)
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
-            res = Response(
+            return Response(
                 {
                     "user": serializer.data,
                     "message": f"{user.username}님 환영합니다.",
@@ -86,7 +80,6 @@ class LogIn(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-            return res
 
         else:
             return Response(

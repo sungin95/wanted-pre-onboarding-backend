@@ -67,14 +67,52 @@ class ArticleGetCreate(APIView):
         )
 
 
+from accounts.models import User
+
+
+def user_not_equal(request_user: User, user: User) -> bool:
+    if request_user != user:
+        return True
+    else:
+        return False
+
+
 class ArticleDetail(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        return Response()
+    def get(self, request, article_pk):
+        article = Articles.get_object(article_pk)
+        serializer = ArticleSerializer(article)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
-    def put(self, request):
-        return Response()
+    def put(self, request, article_pk):
+        article = Articles.get_object(article_pk)
+        if user_not_equal(request.user, article.owner):
+            raise PermissionDenied
+        serializer = ArticleSerializer(
+            article,
+            data=request.data,
+            partial=True,
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
-    def delete(self, request):
-        return Response()
+    def delete(self, request, article_pk):
+        article = Articles.get_object(article_pk)
+        if user_not_equal(request.user, article.owner):
+            raise PermissionDenied
+        article.delete()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT,
+        )

@@ -48,3 +48,33 @@ class ArticleGetCreate(APIView):
             serializer.data,
             status=status.HTTP_200_OK,
         )
+
+    def post(self, request):
+        articleSerializer = ArticleSerializer(
+            data=request.data,
+        )
+        if articleSerializer.is_valid():
+            articleSerializer.save(
+                owner=request.user,
+            )
+            return Response(
+                articleSerializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            articleSerializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class ArticleDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response()
+
+    def put(self, request):
+        return Response()
+
+    def delete(self, request):
+        return Response()
